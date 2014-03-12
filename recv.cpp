@@ -61,7 +61,7 @@ void print_uchar(unsigned char * ofdm_b){
      char buff2[10];
      memset(send_buff,0,sizeof(char)*14404);
     for( int i = 0 ; i < 4804 ; i++ ){
-        fprintf(fp2,"%x,",ofdm_buff[i]);
+//        fprintf(fp2,"%x,",ofdm_buff[i]);
         convert_hex2str(ofdm_buff[i],buff2);
 	 strcat(send_buff,buff2); 
         //  printf("%x,",ofdm_buff[i]);
@@ -88,15 +88,22 @@ void* myread(void* param)
 			printf("recv error!\n");
         	else{
      			mycount = mycount + 1;
+                        if(status != -1 && mycount >10){
+                             status = 2;
+                        }
+                        if(status != -1 && mycount > 100){
+                            mycount = 0;
+                            status = 0;
+                        }
                         //printf("\n");
-                        
+                  /*      
                      if( mycount <= 100 ){
                          for( int j = 0 ; j < size ; j++ ){
                              fprintf(fp1,"%x,",rxbuff[j]);
                              }
                          fprintf(fp1,"\n");
 	             }
- 
+                  */
                      for(int j = 0 ; j < 10 ; j++){
                           printf("%x,|",rxbuff[j]);
                      }
