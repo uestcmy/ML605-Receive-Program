@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <string.h>
 //#include <sys/types.h>
 //#include <sys/stat.h>
 //#include <fcntl.h>
@@ -16,67 +15,91 @@
 //#define RAWDATA_FILENAME    "/dev/ml605_raw_data"
 //#define XDMA_FILENAME       "/dev/xdma_stat"
 //#define PKTSIZE             4096
-#include "socket_20140311.cpp"
-#include "convert_20140311.cpp"
-#include "judge_20140311.cpp"
-
-
-int status = 0;
 static const int size = 4096;
-static const int recv_cycle = 100;
 bool isclose = false;
 int testfd;
 int count=0;
 long int mycount = 0;
-int find_aaa0 = 0;
 int mysleep = 1000000;
+unsigned char res[4096];
+    unsigned char  pool[25805];
+
+unsigned char *p1;
+int start = 0;
+void extract(){
+    int cnt = 0;
+
+    unsigned char sendbuff[4096];
+    while(cnt < 4096 ){
+         sendbuff[cnt] = pool[start];
+         start++;
+         cnt++;
+         if(start == 25804){
+              start = 0;
+          }
+    }
+   for( int i = 0 ; i < 4096 ; i++ ){
+       res[i] = sendbuff[i];
+
+   }
 
 
-FILE *fp1,*fp2;
-unsigned char sml_buff[size];
-unsigned char ofdm_buff[size*4];
-char send_buff[14404];
-int cnt_ofdm = 0;
-int cnt_frame = 0;
+}
+void render(){
 
+    pool[0] = 0xbb;
+    pool[1] = 0xb0;
+    pool[2] = 0xcc;
+    pool[3] = 0xc0;
+    for(int i = 4 ; i < 204 ; i++){
+         pool[i] = 0x00;
+     }
+    for( int i = 0 ; i < 50 ; i++ ){
+         for( int j = 0 ; j < 512 ; j+= 2 ){
+               pool[ i*512 + j + 204] = 0x00;
+               pool[ i*512 + j + 1 +204] = j/2;
 
+          }
+    }    
+/*
+    for( int i = 0 ; i < 25804 ; i++ ){
+          if( i % 4096 == 0){
+                fprintf(fp1,"\n");
+           }
+          fprintf(fp1,"%x,",pool[i]);
+
+     }
+*/
+    p1 = &pool[0];
+   
+}
 
 void* mywrite(void* param)
 {
 unsigned char txbuff[size];
 
 while(!isclose)
-   {for(int i=0;i<size;i++)
-    txbuff[i] = count;
-       int sendsize = ML605Send(testfd,txbuff,size);
+   {
+   for(int i=0;i<size;i++){
+      txbuff[i] = i % 200;
+   }
+
+    extract();
+    
+
+       int sendsize = ML605Send(testfd,res,size);
+        //sleep(1);
+/*
+       for( int i = 0 ; i < 10 ; i++ ){
+             printf("%x,",res[i]);
+        }printf("\n sendsize :%d:",sendsize);
+*/
 	   if(sendsize!=size)printf("send error!\n");
 	   
 	  // usleep(1);
     count++;
    }
 
-}
-void print_uchar(unsigned char * ofdm_b){
-//    fprintf(fp2,"The whole ofdm frame is :");
-     char buff2[10];
-     memset(send_buff,0,sizeof(char)*14404);
-    for( int i = 0 ; i < 4804 ; i++ ){
-        fprintf(fp2,"%x,",ofdm_buff[i]);
-        convert_hex2str(ofdm_buff[i],buff2);
-	 strcat(send_buff,buff2); 
-        //  printf("%x,",ofdm_buff[i]);
-    }
-/*
-     printf("ofdmchar is \n");
-    for( int i = 0 ; i < 4804 ; i++ ){
-       printf("%x,",ofdm_buff[i]);
-    }printf("\n");
-*/
-    socket_send(send_buff);
- 
-    //fprintf(fp2,"\n");
-    printf("--------------------------------------------------------------------------------------------");
-    cnt_frame++;
 }
 
 void* myread(void* param)
@@ -88,86 +111,11 @@ void* myread(void* param)
 			printf("recv error!\n");
         	else{
      			mycount = mycount + 1;
-                        //printf("\n");
-                        
-                     if( mycount <= 100 ){
-                         for( int j = 0 ; j < size ; j++ ){
-                             fprintf(fp1,"%x,",rxbuff[j]);
-                             }
-                         fprintf(fp1,"\n");
-	             }
- 
-                     for(int j = 0 ; j < 10 ; j++){
-                          printf("%x,|",rxbuff[j]);
-                     }
-
-                     if(status == 1){
-                         for( int i = 0 ; i <size && cnt_ofdm <= 4804; i++){
-                              ofdm_buff[cnt_ofdm++] = rxbuff[i]; 
-                             }
-                             
-
-                         if( cnt_ofdm == 4805 ){
-			        status = 0;
-                             if(1){
-                                 print_uchar(ofdm_buff);
-	                         }//if
-                           
-                             }//if
-                     }//if statu == 1
-
-                    else if( status == 0 && judge_header_a0aa(rxbuff) == 1 ){
-                      
-                       if( judge_tail_a0aa(rxbuff,size) == 1 ){
-                        
-                                 int begin = 0;
-                                 printf("20,3c is found!");
-                                 for( int i = 0; i < size-4 ; i++ ){
-                                     if( rxbuff[i] == 0xcc && rxbuff[i+1] == 0xcc ){
-                                         printf("indeed!!!!");
-                                         begin = i;
-                                         break;
-                                     }//if
-                                 }//for
-                                 if( begin != 0 ){
-                                     status = 1;
-                                     int cnt_sml = 0;
-                                     cnt_ofdm = 0;
-                                     memset(ofdm_buff,0,sizeof(char)*size*4);
-                                     for(int i = begin ; i < size ; i++ ){
-                                         ofdm_buff[cnt_ofdm++] = rxbuff[i];
-                                     }
-/*
-                                     printf("ofdm_buffer is :");
-                                     for( int j = 0 ; j <10 ; j++ ){
-                                          printf("%x,",ofdm_buff[j]);
-                                     }   printf("\n"); 
-*/
-                                 }
-                            }//if
-
-                           
-                        }//if
-                        else {
-                              printf("Not find 00,aa \n");
-
-                        }//else
-
-
-/*
-                        for(int i=0;i<4;i++){
-//	          		printf("%x,",rxbuff[i]);
-	                        if( rxbuff[i] == 0xaa && rxbuff[i+1] == 0xa0 ){
-                                     printf("Find aa,a0");
-                                     break;
-                                }
-                                else{
-                                     printf("Not find aa,a0");
-                                     break;
-                                }
-			}//for 
-
-                        printf("\n");
+	/*
+			printf("recv successful!=%d",recvsize);
+            		for(int i=0;i<10;i++)
+	           		printf("%x,",rxbuff[i]);
+            		printf("one receive cycle\n");
 */
         	}//end else
 		   
@@ -183,7 +131,7 @@ void* GetRate(void* param)
     while(!isclose){ 
           scount = mycount;
           printf("scount=%d\n",scount);
-          usleep(1000000);
+          //usleep(1000000);
           ecount = mycount;
           printf("ecount=%d\n",ecount);
           recvrata = (ecount - scount)*4096*8/1000000;
@@ -192,12 +140,7 @@ void* GetRate(void* param)
 }
 int main()
 {
-
-   socket_init();
-
-   fp1 = fopen("raw_recv_data.txt","w");
-   fp2 = fopen("ofdm_frame.txt","w");
-
+render();
    printf("my:hello fedora!\n");
 if((testfd = ML605Open())<0)
    printf("open ml605 failed");
@@ -208,22 +151,22 @@ if(ML605StartEthernet(testfd, SFP_TX_START)<0) {
     exit(-1);
   }
 
-/* pthread_t writethread;
+ pthread_t writethread;
   if (pthread_create(&writethread, NULL, mywrite, NULL)) 
   {
     perror("writethread process thread creation failed");
   }  
   sleep(1);
-*/  
+  
 
-/*
+
   pthread_t readthread;
   if (pthread_create(&readthread, NULL, GetRate, NULL)) 
   {
     perror("readthread process thread creation failed");
   }  
   sleep(1);
-*/  
+  
   pthread_t ratathread;
   if (pthread_create(&ratathread, NULL, myread, NULL)) 
   {
@@ -232,10 +175,11 @@ if(ML605StartEthernet(testfd, SFP_TX_START)<0) {
   sleep(1);
 
 
+		// read only one time
+	
+  
   char ch_input;
   scanf("%c", &ch_input);
   isclose=true;
   ML605Close(testfd);
-  fclose(fp1);
-  fclose(fp2);
 }
