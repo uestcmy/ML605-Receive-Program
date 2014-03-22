@@ -15,8 +15,11 @@
 //#define RAWDATA_FILENAME    "/dev/ml605_raw_data"
 //#define XDMA_FILENAME       "/dev/xdma_stat"
 //#define PKTSIZE             4096
+FILE *fp1;
 static const int size = 4096;
 bool isclose = false;
+bool isclose2 = false;
+int cnt_send = 0;
 int testfd;
 int count=0;
 long int mycount = 0;
@@ -41,13 +44,20 @@ void extract(){
 }
 
 void render_a0aa(){
-    pool[0] = 0xaa;
-    pool[1] = 0xa0;
-    pool[2] = 0xaa;
-    pool[3] = 0xa0;
+    pool[0] = 0xbb;
+    pool[1] = 0xb0;
+    pool[2] = 0xcc;
+    pool[3] = 0xc0;
 
-    pool[4] = 0xfb;
-    pool[5] = 0x07;
+
+    for( int i = 4 ; i < 204 ; i++ ){
+        pool[i] = 0x00;
+    }
+    pool[204] = 0xaa;
+    pool[205] = 0xa0;
+
+    pool[206] = 0xaa;
+    pool[207] = 0xa0;
 
     pool[size-4] = 0xaa;
     pool[size-3] = 0xaa;
@@ -56,15 +66,16 @@ void render_a0aa(){
   
     int isend = 1;
 
-    for( int i = 0 ; isend == 1  ; i++){
-        for( int j = 0 ;j < 256 ; j++ ){
-            pool[ i*512 + j*2  +6 ] = j;
-            pool[ i*512 + j*2  +6+1 ] = 0x00;
-            
-            if( i*512 + j*2 + 6 + 1 == 4091  ){
-                isend = 0;break;
-            }
+    int cnt = 208;
+    while( cnt < 4092){
+        for( int i = 0 ; i < 256 && cnt < 4092 ; i++ ){
+           pool[cnt++] = i+0x00;
+           pool[cnt++] = 0x00; 
         }
+    }
+
+    for( int i = 0 ; i < 4096  ; i++ ){
+        fprintf(fp1,"%x,",pool[i]);
     }
     p1 = &pool[0];
 
@@ -91,7 +102,7 @@ void render(){
           if( i % 4096 == 0){
                 fprintf(fp1,"\n");
            }
-          fprintf(fp1,"%x,",pool[i]);
+          fprintf(fp1,"%x,",pool[i]) 4096;
 
      }
 */
@@ -103,7 +114,7 @@ void* mywrite(void* param)
 {
 unsigned char txbuff[size];
 
-while(!isclose)
+while(!isclose2)
 {
     int sendsize;
     if(status == 1 ){
@@ -116,7 +127,12 @@ while(!isclose)
     if(status == 0 ){
         extract();
         sendsize = ML605Send(testfd,res,size);
+        sendsize = ML605Send(testfd,res,size);
         //sleep(1);
+        cnt_send++;
+        if( cnt_send== 1 ){
+            isclose2 = true;
+        }
       
     }
 /*
@@ -171,6 +187,7 @@ void* GetRate(void* param)
 }
 int main()
 {
+    fp1 = fopen("data.txt","w");
   render_a0aa();
   printf("my:hello fedora!!\n");
 
@@ -214,4 +231,5 @@ if(ML605StartEthernet(testfd, SFP_TX_START)<0) {
   scanf("%c", &ch_input);
   isclose=true;
   ML605Close(testfd);
+    fclose(fp1);
 }
