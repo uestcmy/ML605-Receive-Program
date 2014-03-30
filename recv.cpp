@@ -22,7 +22,7 @@ int count=0;
 long int mycount = 0;
 int mysleep = 1000000;
 unsigned char res[4096];
-    unsigned char  pool[25805];
+unsigned char  pool[25805];
 
 unsigned char *p1;
 int start = 0;
@@ -150,7 +150,7 @@ if(ML605StartEthernet(testfd, SFP_TX_START)<0) {
 	  ML605Close(testfd);
     exit(-1);
   }
-
+/*
  pthread_t writethread;
   if (pthread_create(&writethread, NULL, mywrite, NULL)) 
   {
@@ -159,7 +159,7 @@ if(ML605StartEthernet(testfd, SFP_TX_START)<0) {
   sleep(1);
   
 
-
+*/
   pthread_t readthread;
   if (pthread_create(&readthread, NULL, GetRate, NULL)) 
   {
