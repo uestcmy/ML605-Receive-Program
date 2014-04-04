@@ -16,6 +16,7 @@
 //#define RAWDATA_FILENAME    "/dev/ml605_raw_data"
 //#define XDMA_FILENAME       "/dev/xdma_stat"
 //#define PKTSIZE             4096
+#define SENDSIZE 5000
 #include "socket_20140311.cpp"
 #include "convert_20140311.cpp"
 #include "judge_20140311.cpp"
@@ -35,7 +36,7 @@ int mysleep = 1000000;
 FILE *fp1,*fp2;
 unsigned char sml_buff[size];
 unsigned char ofdm_buff[size*4];
-char send_buff[14404];
+char send_buff[SENDSIZE*4];
 int cnt_ofdm = 0;
 int cnt_frame = 0;
 
@@ -59,8 +60,9 @@ while(!isclose)
 void print_uchar(unsigned char * ofdm_b){
 //    fprintf(fp2,"The whole ofdm frame is :");
      char buff2[10];
-     memset(send_buff,0,sizeof(char)*14404);
-    for( int i = 0 ; i < 4804 ; i++ ){
+     memset(send_buff,0,sizeof(char)*SENDSIZE*4);
+    
+    for( int i = 0 ; i < SENDSIZE ; i++ ){
 //        fprintf(fp2,"%x,",ofdm_buff[i]);
         convert_hex2str(ofdm_buff[i],buff2);
 	 strcat(send_buff,buff2); 
@@ -73,7 +75,8 @@ void print_uchar(unsigned char * ofdm_b){
     }printf("\n");
 */
     socket_send(send_buff);
- 
+    printf("prob\n");
+    puts(send_buff);
     //fprintf(fp2,"\n");
     printf("--------------------------------------------------------------------------------------------");
     cnt_frame++;
@@ -109,12 +112,12 @@ void* myread(void* param)
                      }
 
                      if(status == 1){
-                         for( int i = 0 ; i <size && cnt_ofdm <= 4804; i++){
+                         for( int i = 0 ; i <size && cnt_ofdm <= SENDSIZE-1; i++){
                               ofdm_buff[cnt_ofdm++] = rxbuff[i]; 
                              }
                              
 
-                         if( cnt_ofdm == 4805 ){
+                         if( cnt_ofdm == SENDSIZE ){
 			        status = 0;
                              if(1){
                                  print_uchar(ofdm_buff);
