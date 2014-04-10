@@ -22,15 +22,23 @@ int sock_fd3, recvbytes3;
 int sock_fd4, recvbytes4;
 int sock_fd5, recvbytes5;
 int sock_fd6, recvbytes6;
-
 int sock_fd7, recvbytes7;
 int sock_fd8, recvbytes8;
 int sock_fd9, recvbytes9;
 int sock_fd10, recvbytes10;
+//Mu-MIMO
 int sock_fd11, recvbytes11;
 int sock_fd12, recvbytes12;
 int sock_fd13, recvbytes13;
 int sock_fd14, recvbytes14;
+//CoMP_CB
+int sock_fd15, recvbytes15;
+int sock_fd16, recvbytes16;
+int sock_fd17, recvbytes17;
+int sock_fd18, recvbytes18;
+
+int sock_fd19, recvbytes19;
+int sock_fd20, recvbytes20;
 
 struct hostent *host;
 struct sockaddr_in serv_addr;
@@ -47,6 +55,12 @@ struct sockaddr_in serv_addr11;
 struct sockaddr_in serv_addr12;
 struct sockaddr_in serv_addr13;
 struct sockaddr_in serv_addr14;
+struct sockaddr_in serv_addr15;
+struct sockaddr_in serv_addr16;
+struct sockaddr_in serv_addr17;
+struct sockaddr_in serv_addr18;
+struct sockaddr_in serv_addr19;
+struct sockaddr_in serv_addr20;
 
 int socket_init(){
     host=gethostbyname("127.0.0.1");
@@ -136,6 +150,45 @@ int socket_init(){
     serv_addr14.sin_addr = *((struct in_addr *)host->h_addr);
     bzero(&(serv_addr14.sin_zero),8);
 
+
+    sock_fd15 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr15.sin_family=AF_INET;
+    serv_addr15.sin_port=htons(7017);// for c1cc  stream 4
+    serv_addr15.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr15.sin_zero),8);
+
+    sock_fd16 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr16.sin_family=AF_INET;
+    serv_addr16.sin_port=htons(7018);// for c1cc  stream 4
+    serv_addr16.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr16.sin_zero),8);
+
+    sock_fd17 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr17.sin_family=AF_INET;
+    serv_addr17.sin_port=htons(7019);// for c1cc  stream 4
+    serv_addr17.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr17.sin_zero),8);
+
+    sock_fd18 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr18.sin_family=AF_INET;
+    serv_addr18.sin_port=htons(7020);// for c1cc  stream 4
+    serv_addr18.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr18.sin_zero),8);
+
+    sock_fd19 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr19.sin_family=AF_INET;
+    serv_addr19.sin_port=htons(7021);// for c1cc  stream 4
+    serv_addr19.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr19.sin_zero),8);
+
+
+    sock_fd20 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr20.sin_family=AF_INET;
+    serv_addr20.sin_port=htons(7022);// for c1cc  stream 4
+    serv_addr20.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr20.sin_zero),8);
+
+
     return 0;
 }
 
@@ -152,7 +205,14 @@ void socket_send_c1cc(char *s1){
     sendto(sock_fd11,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr11,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
     sendto(sock_fd12,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr12,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
     sendto(sock_fd13,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr13,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
-    sendto(sock_fd14,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr14,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
+    sendto(sock_fd14,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr14,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI
+    // CoMP-CB
+    sendto(sock_fd15,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr15,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
+    sendto(sock_fd16,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr16,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
+    sendto(sock_fd17,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr17,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
+    sendto(sock_fd18,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr18,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
+    sendto(sock_fd19,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr19,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
+
 }
 
 void socket_send(char *s1){

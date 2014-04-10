@@ -16,7 +16,7 @@
 //#define RAWDATA_FILENAME    "/dev/ml605_raw_data"
 //#define XDMA_FILENAME       "/dev/xdma_stat"
 //#define PKTSIZE             4096
-#define SENDSIZE 5000
+#define SENDSIZE 5144
 #include "socket_20140311.cpp"
 #include "convert_20140311.cpp"
 #include "judge_20140311.cpp"
@@ -39,7 +39,12 @@ unsigned char ofdm_buff[size*4];
 char send_buff[SENDSIZE*4];
 int cnt_ofdm = 0;
 int cnt_frame = 0;
+int cnt_rx_1 = 0;
 
+char rx_1_buff[size*4];//buffer for rx_1
+char rx_2_buff[size*4];//buffer for rx_1
+char rx_3_buff[size*4];//buffer for rx_1
+char rx_4_buff[size*4];//buffer for rx_1
 
 
 void* mywrite(void* param)
@@ -74,7 +79,33 @@ void print_uchar(unsigned char * ofdm_b){
        printf("%x,",ofdm_buff[i]);
     }printf("\n");
 */
-    socket_send(send_buff);
+    if(send_buff[1] == 'c' ){
+        socket_send(send_buff);
+    }
+    for( int i = 0 ; i < 30 ; i++ ){
+         printf("%c",send_buff[i]);
+    }printf("-------------------------\n");
+
+
+    int rx1_pos = 4808*3+6;
+    int rx_len = 48*3;
+    for( int i = rx1_pos ; i < rx1_pos + rx_len ; i++ ){
+        //printf("%c",send_buff[i]);
+        rx_1_buff[cnt_rx_1] = send_buff[i];
+        rx_2_buff[cnt_rx_1] = send_buff[i+rx_len];
+        rx_3_buff[cnt_rx_1] = send_buff[i+rx_len*2];
+        rx_4_buff[cnt_rx_1] = send_buff[i+rx_len*3];
+        cnt_rx_1++;
+    }
+    if(send_buff[1] == '1' ){ // c1,cc
+          socket_send_c1cc(send_buff);
+     }
+    if( cnt_rx_1 == rx_len *100  ){
+       socket_send_rx(rx_1_buff,rx_2_buff,rx_3_buff,rx_4_buff);
+       cnt_rx_1 = 0; 
+    }// end if len * 100
+
+
     printf("--------------------------------------------------------------------------------------------");
     cnt_frame++;
 }
@@ -89,7 +120,7 @@ void* myread(void* param)
         	else{
      			mycount = mycount + 1;
                         if(status != -1 && mycount >10){
-                             status = 2;
+                             status = 0;
                         }
                         if(status != -1 && mycount > 100){
                             mycount = 0;
@@ -130,7 +161,7 @@ void* myread(void* param)
                                  int begin = 0;
                                  printf("20,3c is found!");
                                  for( int i = 0; i < size-4 ; i++ ){
-                                     if( rxbuff[i] == 0xcc && rxbuff[i+1] == 0xcc ){
+                                     if( (rxbuff[i] == 0xcc||rxbuff[i] == 0xc1) && rxbuff[i+1] == 0xcc ){
                                          printf("indeed!!!!");
                                          begin = i;
                                          break;
