@@ -23,7 +23,14 @@ int sock_fd4, recvbytes4;
 int sock_fd5, recvbytes5;
 int sock_fd6, recvbytes6;
 
-
+int sock_fd7, recvbytes7;
+int sock_fd8, recvbytes8;
+int sock_fd9, recvbytes9;
+int sock_fd10, recvbytes10;
+int sock_fd11, recvbytes11;
+int sock_fd12, recvbytes12;
+int sock_fd13, recvbytes13;
+int sock_fd14, recvbytes14;
 
 struct hostent *host;
 struct sockaddr_in serv_addr;
@@ -32,9 +39,17 @@ struct sockaddr_in serv_addr3;
 struct sockaddr_in serv_addr4;
 struct sockaddr_in serv_addr5;
 struct sockaddr_in serv_addr6;
+struct sockaddr_in serv_addr7;
+struct sockaddr_in serv_addr8;
+struct sockaddr_in serv_addr9;
+struct sockaddr_in serv_addr10;
+struct sockaddr_in serv_addr11;
+struct sockaddr_in serv_addr12;
+struct sockaddr_in serv_addr13;
+struct sockaddr_in serv_addr14;
 
 int socket_init(){
-    host=gethostbyname("127.0.0.1");//local addr
+    host=gethostbyname("127.0.0.1");
     sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
     serv_addr.sin_family=AF_INET;
     serv_addr.sin_port=htons(7005);
@@ -72,13 +87,73 @@ int socket_init(){
     bzero(&(serv_addr6.sin_zero),8);
 
 
+    sock_fd7 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr7.sin_family=AF_INET;
+    serv_addr7.sin_port=htons(7009);// for comp qpsk rx1
+    serv_addr7.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr7.sin_zero),8);
 
+    sock_fd8 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr8.sin_family=AF_INET;
+    serv_addr8.sin_port=htons(7010);// for Channel H11
+    serv_addr8.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr8.sin_zero),8);
+
+    sock_fd9 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr9.sin_family=AF_INET;
+    serv_addr9.sin_port=htons(7011);// for Channel H11
+    serv_addr9.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr9.sin_zero),8);
+    
+
+    sock_fd10 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr10.sin_family=AF_INET;
+    serv_addr10.sin_port=htons(7012);// for Channel H11
+    serv_addr10.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr10.sin_zero),8);
+
+    sock_fd11 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr11.sin_family=AF_INET;
+    serv_addr11.sin_port=htons(7013);// for c1cc  stream 1
+    serv_addr11.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr11.sin_zero),8);
+
+    sock_fd12 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr12.sin_family=AF_INET;
+    serv_addr12.sin_port=htons(7014);// for c1cc  stream 2
+    serv_addr12.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr12.sin_zero),8);
+
+    sock_fd13 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr13.sin_family=AF_INET;
+    serv_addr13.sin_port=htons(7015);// for c1cc  stream 3
+    serv_addr13.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr13.sin_zero),8);
+
+    sock_fd14 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr14.sin_family=AF_INET;
+    serv_addr14.sin_port=htons(7016);// for c1cc  stream 4
+    serv_addr14.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr14.sin_zero),8);
 
     return 0;
 }
 
 
   
+void socket_send_rx(char *s1,char *s2,char *s3,char *s4){
+    sendto(sock_fd7,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr7,sizeof(serv_addr));//port:7009, send to rx_1 CoMP_Stream
+    sendto(sock_fd8,s2,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr8,sizeof(serv_addr));//port:7010, send to rx_1 QAM_Star
+    sendto(sock_fd9,s3,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr9,sizeof(serv_addr));//port:7011, send to rx_1 QAM_Star
+    sendto(sock_fd10,s4,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr10,sizeof(serv_addr));//port:7012, send to rx_1 QAM_Star
+}
+void socket_send_c1cc(char *s1){
+
+    sendto(sock_fd11,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr11,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
+    sendto(sock_fd12,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr12,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
+    sendto(sock_fd13,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr13,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
+    sendto(sock_fd14,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr14,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
+}
 
 void socket_send(char *s1){
 

@@ -75,9 +75,6 @@ void print_uchar(unsigned char * ofdm_b){
     }printf("\n");
 */
     socket_send(send_buff);
-    printf("prob\n");
-    puts(send_buff);
-    //fprintf(fp2,"\n");
     printf("--------------------------------------------------------------------------------------------");
     cnt_frame++;
 }
