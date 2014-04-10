@@ -34,7 +34,7 @@ struct sockaddr_in serv_addr5;
 struct sockaddr_in serv_addr6;
 
 int socket_init(){
-    host=gethostbyname("127.0.0.1");
+    host=gethostbyname("127.0.0.1");//local addr
     sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
     serv_addr.sin_family=AF_INET;
     serv_addr.sin_port=htons(7005);
