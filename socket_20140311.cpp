@@ -39,6 +39,7 @@ int sock_fd18, recvbytes18;
 
 int sock_fd19, recvbytes19;
 int sock_fd20, recvbytes20;
+int sock_fd21, recvbytes21;
 
 struct hostent *host;
 struct sockaddr_in serv_addr;
@@ -61,6 +62,7 @@ struct sockaddr_in serv_addr17;
 struct sockaddr_in serv_addr18;
 struct sockaddr_in serv_addr19;
 struct sockaddr_in serv_addr20;
+struct sockaddr_in serv_addr21;
 
 int socket_init(){
     host=gethostbyname("127.0.0.1");
@@ -184,9 +186,16 @@ int socket_init(){
 
     sock_fd20 = socket(AF_INET, SOCK_DGRAM, 0);
     serv_addr20.sin_family=AF_INET;
-    serv_addr20.sin_port=htons(7022);// for c1cc  stream 4
+    serv_addr20.sin_port=htons(7022);// channel 2d rx3
     serv_addr20.sin_addr = *((struct in_addr *)host->h_addr);
     bzero(&(serv_addr20.sin_zero),8);
+
+    sock_fd21 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr21.sin_family=AF_INET;
+    serv_addr21.sin_port=htons(7023);// for c1cc  channel 2d rx1
+    serv_addr21.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr21.sin_zero),8);
+
 
 
     return 0;
@@ -212,7 +221,8 @@ void socket_send_c1cc(char *s1){
     sendto(sock_fd17,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr17,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
     sendto(sock_fd18,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr18,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
     sendto(sock_fd19,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr19,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
-
+    sendto(sock_fd20,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr20,sizeof(serv_addr));//port:7022 channel 2x2 Rx3
+    sendto(sock_fd21,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr21,sizeof(serv_addr));//port:7023 channel 2x2 Rx1
 }
 
 void socket_send(char *s1){
