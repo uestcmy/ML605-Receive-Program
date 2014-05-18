@@ -40,6 +40,7 @@ int sock_fd18, recvbytes18;
 int sock_fd19, recvbytes19;
 int sock_fd20, recvbytes20;
 int sock_fd21, recvbytes21;
+int sock_fd22, recvbytes22;
 
 struct hostent *host;
 struct sockaddr_in serv_addr;
@@ -63,6 +64,7 @@ struct sockaddr_in serv_addr18;
 struct sockaddr_in serv_addr19;
 struct sockaddr_in serv_addr20;
 struct sockaddr_in serv_addr21;
+struct sockaddr_in serv_addr22;
 
 int socket_init(){
     host=gethostbyname("127.0.0.1");
@@ -197,6 +199,11 @@ int socket_init(){
     bzero(&(serv_addr21.sin_zero),8);
 
 
+    sock_fd22 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr22.sin_family=AF_INET;
+    serv_addr22.sin_port=htons(7024);// for c1cc  throughout FDD-LTE
+    serv_addr22.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr22.sin_zero),8);
 
     return 0;
 }
@@ -233,4 +240,5 @@ void socket_send(char *s1){
     sendto(sock_fd4,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr4,sizeof(serv_addr));//port:7006, send to channel plot GUI
     sendto(sock_fd5,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr5,sizeof(serv_addr));//port:7003, send to channel plot GUI
     sendto(sock_fd6,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr6,sizeof(serv_addr));//port:7006, send to channel plot GUI
+    sendto(sock_fd22,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr22,sizeof(serv_addr));//port:7022, send to throughput
 }

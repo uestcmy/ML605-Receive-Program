@@ -78,13 +78,17 @@ void print_uchar(unsigned char * ofdm_b){
     for( int i = 0 ; i < 4804 ; i++ ){
        printf("%x,",ofdm_buff[i]);
     }printf("\n");
-*/
-    if(send_buff[1] == 'c' ){
+*/  
+    printf("\nsend_buff:\n");
+    for( int i = 0 ; i < 30 ; i++ ){
+         printf("%c",send_buff[i]);
+    }
+    if(send_buff[1] == '0' ){
         socket_send(send_buff);
     }
     for( int i = 0 ; i < 30 ; i++ ){
          printf("%c",send_buff[i]);
-    }printf("-------------------------\n");
+    }printf("-----------send------------\n");
 
 
     int rx1_pos = 4808*3+6;
@@ -161,7 +165,7 @@ void* myread(void* param)
                                  int begin = 0;
                                  printf("20,3c is found!");
                                  for( int i = 0; i < size-4 ; i++ ){
-                                     if( (rxbuff[i] == 0xcc||rxbuff[i] == 0xc1) && rxbuff[i+1] == 0xcc ){
+                                     if( rxbuff[i] == 0x20 && rxbuff[i+1] == 0x3c ){
                                          printf("indeed!!!!");
                                          begin = i;
                                          break;
