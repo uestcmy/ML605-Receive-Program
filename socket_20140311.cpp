@@ -42,6 +42,17 @@ int sock_fd20, recvbytes20;
 int sock_fd21, recvbytes21;
 int sock_fd22, recvbytes22;
 
+int sock_fd23, recvbytes23;
+int sock_fd24, recvbytes24;
+int sock_fd25, recvbytes25;
+int sock_fd26, recvbytes26;
+
+
+int sock_fd27, recvbytes27;
+int sock_fd28, recvbytes28;
+int sock_fd29, recvbytes29;
+int sock_fd30, recvbytes30;
+
 struct hostent *host;
 struct sockaddr_in serv_addr;
 struct sockaddr_in serv_addr2;
@@ -65,6 +76,14 @@ struct sockaddr_in serv_addr19;
 struct sockaddr_in serv_addr20;
 struct sockaddr_in serv_addr21;
 struct sockaddr_in serv_addr22;
+struct sockaddr_in serv_addr23;
+struct sockaddr_in serv_addr24;
+struct sockaddr_in serv_addr25;
+struct sockaddr_in serv_addr26;
+struct sockaddr_in serv_addr27;
+struct sockaddr_in serv_addr28;
+struct sockaddr_in serv_addr29;
+struct sockaddr_in serv_addr30;
 
 int socket_init(){
     host=gethostbyname("127.0.0.1");
@@ -205,6 +224,71 @@ int socket_init(){
     serv_addr22.sin_addr = *((struct in_addr *)host->h_addr);
     bzero(&(serv_addr22.sin_zero),8);
 
+    // 4CB 4 No_CoMP
+    sock_fd23 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr23.sin_family=AF_INET;
+    serv_addr23.sin_port=htons(8000);// for c1cc  throughout FDD-LTE
+    serv_addr23.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr23.sin_zero),8);
+
+    sock_fd24 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr24.sin_family=AF_INET;
+    serv_addr24.sin_port=htons(8001);// for c1cc  throughout FDD-LTE
+    serv_addr24.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr24.sin_zero),8);
+ 
+
+
+    sock_fd25 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr25.sin_family=AF_INET;
+    serv_addr25.sin_port=htons(8002);// for c1cc  throughout FDD-LTE
+    serv_addr25.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr25.sin_zero),8);
+ 
+
+
+
+    sock_fd26 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr26.sin_family=AF_INET;
+    serv_addr26.sin_port=htons(8003);// for c1cc  throughout FDD-LTE
+    serv_addr26.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr26.sin_zero),8);
+ 
+
+
+    sock_fd27 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr27.sin_family=AF_INET;
+    serv_addr27.sin_port=htons(8004);// for c1cc  throughout FDD-LTE
+    serv_addr27.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr27.sin_zero),8);
+ 
+
+
+    sock_fd28 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr28.sin_family=AF_INET;
+    serv_addr28.sin_port=htons(8005);// for c1cc  throughout FDD-LTE
+    serv_addr28.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr28.sin_zero),8);
+ 
+
+
+
+    sock_fd29 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr29.sin_family=AF_INET;
+    serv_addr29.sin_port=htons(8006);// for c1cc  throughout FDD-LTE
+    serv_addr29.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr29.sin_zero),8);
+ 
+
+
+    sock_fd30 = socket(AF_INET, SOCK_DGRAM, 0);
+    serv_addr30.sin_family=AF_INET;
+    serv_addr30.sin_port=htons(8007);// for c1cc  throughout FDD-LTE
+    serv_addr30.sin_addr = *((struct in_addr *)host->h_addr);
+    bzero(&(serv_addr30.sin_zero),8);
+ 
+
+
     return 0;
 }
 
@@ -230,6 +314,15 @@ void socket_send_c1cc(char *s1){
     sendto(sock_fd19,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr19,sizeof(serv_addr));//port:7005 , send to QPSK plot GUI 
     sendto(sock_fd20,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr20,sizeof(serv_addr));//port:7022 channel 2x2 Rx3
     sendto(sock_fd21,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr21,sizeof(serv_addr));//port:7023 channel 2x2 Rx1
+    //Cb,Nio CB 20140703
+    sendto(sock_fd23,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr23,sizeof(serv_addr));//port:8000 CB1
+    sendto(sock_fd24,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr24,sizeof(serv_addr));//port:8001 CB2
+    sendto(sock_fd25,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr25,sizeof(serv_addr));//port:8002 CB3
+    sendto(sock_fd26,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr26,sizeof(serv_addr));//port:8003 CB4
+    sendto(sock_fd27,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr27,sizeof(serv_addr));//port:8004 CB5
+    sendto(sock_fd28,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr28,sizeof(serv_addr));//port:8004 CB6
+    sendto(sock_fd29,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr29,sizeof(serv_addr));//port:8005 CB7
+    sendto(sock_fd30,s1,SENDSIZE*3+20,0,(struct sockaddr *)&serv_addr30,sizeof(serv_addr));//port:8006 CB8
 }
 
 void socket_send(char *s1){
